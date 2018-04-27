@@ -1,6 +1,6 @@
-Elisabeth Mansfield
-Student Portfolio
-GPA 3.78
+# Elisabeth Mansfield
+# Student Portfolio
+# GPA 3.78
 
 Courses Completed:
 CS161 - Intro to Computer Science I

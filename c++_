@@ -1,0 +1,353 @@
+/*********************************************************************
+ ** Elisabeth Mansfield 
+ ** CS162 - Intro to Computer Science II
+ *********************************************************************/
+ 
+/*********************************************************************
+  Tournament.hpp
+ *********************************************************************/
+#ifndef TOURNAMENT_HPP
+#define TOURNAMENT_HPP
+#include "Game.hpp"
+#include "PlayerQueue.hpp"
+#include "LoserStack.hpp"
+
+class Tournament{
+private:
+    Game *game;
+    PlayerQueue *player1;
+    PlayerQueue *player2;
+    LoserStack *losers;
+    Creature *creature;
+    int p1creatures;
+    int p2creatures;
+    bool isTournamentOver;
+    int p1score;
+    int p2score;
+public:
+    void buildTeam(int);
+    void startTournament();
+    void playTournament();
+    void endTournament();
+    void printScoreboard();
+    void setIsTournamentOver(bool);
+    bool getIsTournamentOver();
+    //default constructor
+    Tournament(){
+        game = 0;
+        player1 = 0;
+        player2 = 0;
+        losers = new LoserStack;
+        creature = 0;
+        p1creatures = 0;
+        p2creatures = 0;
+        isTournamentOver = false;
+        p1score = 0;
+        p2score = 0;
+    }
+    //destructor
+    ~Tournament(){
+        if(game!=0) delete game;
+        delete player1;
+        delete player2;
+        delete losers;
+        if(creature != 0) delete creature;
+    }
+};
+#endif
+
+/*********************************************************************
+  Tournament.cpp
+ *********************************************************************/
+#include "Tournament.hpp"
+
+//build players' creature lineups
+void Tournament::buildTeam(int i){
+    
+    //player 1
+    if(i == 1){
+        cout << "How many creatures are on your team?" << endl;
+    
+        //flag
+        bool valid = false;
+        int input = 0;
+    
+        do{
+            cin >> input;
+        
+            //if input is valid
+            if(input){
+                valid = true;
+                break;
+            }
+            //if input is invalid
+            else{
+                cout << "Invalid entry.\nPlease try again:" << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                valid = false;
+            }
+        } while(!valid);
+    
+        //add creatures
+        while(p1creatures < input){
+            cout << "Choose creature #" << p1creatures+1 << ":" << endl;
+            game->creatureMenu();
+            
+            //variable and flag
+            int input2 = 0;
+            valid = false;
+        
+            do{
+                cin >> input2;
+            
+                //if input is valid
+                if(input2 > 0 && input2 < 6){
+                
+                    //get creature's name
+                    string name;
+                    cout << "Please name this character:" << endl;
+                    cin >> name;
+                
+                    switch(input2){
+                        case 1: //Vampire
+                            creature = new Vampire;
+                            creature->setName(name);
+                            player1->enqueue(creature);
+                            creature = 0;
+                            break;
+                        case 2: //Barbarian
+                            creature = new Barbarian;
+                            creature->setName(name);
+                            player1->enqueue(creature);
+                            creature = 0;
+                            break;
+                        case 3: //Blue Men
+                            creature = new BlueMen;
+                            creature->setName(name);
+                            player1->enqueue(creature);
+                            creature = 0;
+                            break;
+                        case 4: //Medusa
+                            creature = new Medusa;
+                            creature->setName(name);
+                            player1->enqueue(creature);
+                            creature = 0;
+                            break;
+                        case 5: //Harry Potter
+                            creature = new HarryPotter;
+                            creature->setName(name);
+                            player1->enqueue(creature);
+                            creature = 0;
+                            break;
+                    }
+                    valid = true;
+                    break;
+                }
+                //if input is invalid
+                else{
+                    cout << "Invalid entry.\nPlease try again:" << endl;
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    valid = false;
+                }
+            }while(!valid);
+        
+            //increment pcreatures
+            p1creatures++;
+        }
+    }
+    //player 2
+    else if(i == 2){
+        cout << "How many creatures are on your team?" << endl;
+        
+        //flag
+        bool valid = false;
+        int input = 0;
+        
+        do{
+            cin >> input;
+            
+            //if input is valid
+            if(input){
+                valid = true;
+                break;
+            }
+            //if input is invalid
+            else{
+                cout << "Invalid entry.\nPlease try again:" << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                valid = false;
+            }
+        }while(!valid);
+        
+        //add creatures
+        while(p2creatures < input){
+            cout << "Choose creature #" << p2creatures+1 << ":" << endl;
+            game->creatureMenu();
+            
+            //variable and flag
+            int input2 = 0;
+            valid = false;
+            
+            do{
+                cin >> input2;
+                
+                //if input is valid
+                if(input2 > 0 && input2 < 6){
+                    
+                    //get creature's name
+                    string name;
+                    cout << "Please name this character:" << endl;
+                    cin >> name;
+                    
+                    switch(input2){
+                        case 1: //Vampire
+                            creature = new Vampire;
+                            creature->setName(name);
+                            player2->enqueue(creature);
+                            creature = 0;
+                            break;
+                        case 2: //Barbarian
+                            creature = new Barbarian;
+                            creature->setName(name);
+                            player2->enqueue(creature);
+                            creature = 0;
+                            break;
+                        case 3: //Blue Men
+                            creature = new BlueMen;
+                            creature->setName(name);
+                            player2->enqueue(creature);
+                            creature = 0;
+                            break;
+                        case 4: //Medusa
+                            creature = new Medusa;
+                            creature->setName(name);
+                            player2->enqueue(creature);
+                            creature = 0;
+                            break;
+                        case 5: //Harry Potter
+                            creature = new HarryPotter;
+                            creature->setName(name);
+                            player2->enqueue(creature);
+                            creature = 0;
+                            break;
+                    }
+                    valid = true;
+                    break;
+                }
+                //if input is invalid
+                else{
+                    cout << "Invalid entry.\nPlease try again:" << endl;
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    valid = false;
+                }
+            }while(!valid);
+            
+            //increment pcreatures
+            p2creatures++;
+        }
+    }
+    
+}
+
+//start the tournament
+void Tournament::startTournament(){
+    game->learnAboutCreatures();
+    
+    //build player 1's team
+    player1 = new PlayerQueue;
+    cout << "Player 1: " << endl;
+    buildTeam(1);
+    cout << endl;
+    
+    //build player 2's team
+    player2 = new PlayerQueue;
+    cout << "Player 2: " << endl;
+    buildTeam(2);
+    
+    cout << "~****** Tournament Begin! ******~" << endl << endl;
+    playTournament();
+}
+
+//play the games
+void Tournament::playTournament(){
+
+    game = new Game(*player1->returnFront(),*player2->returnFront());
+    game->playGame();
+        
+    //if player1 won
+    if(game->getWinner() == 1){
+        p1score++;
+        player2->returnFront()->setName("Player 2: " + player2->returnFront()->getName());
+        losers->push(player2->returnFront());
+        player2->dequeue();
+        player1->returnFront()->recover();
+        player1->enqueue(player1->returnFront());
+        player1->dequeue();
+        player1->printQueue(1); player2->printQueue(2);
+    }
+    
+    //if player2 won
+    if(game->getWinner() == 2){
+        p2score++;
+        player1->returnFront()->setName("Player 1: " + player1->returnFront()->getName());
+        losers->push(player1->returnFront());
+        player1->dequeue();
+        player2->returnFront()->recover();
+        player2->enqueue(player2->returnFront());
+        player2->dequeue();
+        player1->printQueue(1); player2->printQueue(2);
+    }
+    
+    //if tournament is over
+    if(player1->returnFrontNode() == NULL || player2->returnFrontNode() == NULL){
+        setIsTournamentOver(true);
+        endTournament();
+    }
+    //else play next round
+    else{
+        printScoreboard();
+        playTournament();
+    }
+}
+
+//end the tournament
+void Tournament::endTournament(){
+    cout << "Tournament Over." << endl;
+    
+    //display winner
+    if(p1score > p2score)
+        cout << "Player 1 Won!" << endl;
+    else if(p2score > p1score)
+        cout << "Player 2 Won!" << endl;
+    else
+        cout << "It's a tie!" << endl;
+    
+    //display final points
+    cout << "Player 1: " << p1score << endl;
+    cout << "Player 2: " << p2score << endl << endl;
+    
+    //display loser stack
+    losers->printStack();
+}
+
+//print tournament scoreboard
+void Tournament::printScoreboard(){
+    cout << "~* Tournament Scoreboard *~" << endl;
+    cout << "Player 1: " << p1score << endl;
+    cout << "Player 2: " << p2score << endl << endl;
+    cout << "Next Round!" << endl;
+}
+
+//set if tournament is over
+void Tournament::setIsTournamentOver(bool b){
+    isTournamentOver = b;
+}
+
+//return if the tournament is over or not
+bool Tournament::getIsTournamentOver(){
+    return isTournamentOver;
+}

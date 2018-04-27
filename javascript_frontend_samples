@@ -1,0 +1,241 @@
+/**********************************************************
+Elisabeth Mansfield 
+CS290 - Web Development
+***********************************************************/
+
+/**********************************************************
+buildTable function creates an html table using the JS DOM
+receives: document.body and a value representing size of table
+***********************************************************/
+function buildTable(x,size){
+	// create & insert table into the webpage
+	var table = document.createElement("table");
+	x.appendChild(table);
+	x.getElementsByTagName("table")[0].style.border = "thick solid #0abab5";
+	x.getElementsByTagName("table")[0].style.width = "340px";
+	
+	// create header row & insert into the table
+	var headrow = document.createElement("tr");
+	x.getElementsByTagName("table")[0].appendChild(headrow);
+
+	// create, populate & insert cells of the header row
+	for(var i=1; i<(size+1); i++){
+		// create & insert header cell
+		var cell = document.createElement("th");
+		x.getElementsByTagName("tr")[0].appendChild(cell);
+		// populate & style the cell
+		x.getElementsByTagName("th")[i-1].textContent = "Header " + i;
+		x.getElementsByTagName("th")[i-1].style.border = "2px solid lightblue";
+	}	
+
+	for(var j=1; j<(size); j++){
+		// create regular row & insert into the table
+		var row = document.createElement("tr");
+		x.getElementsByTagName("table")[0].appendChild(row);
+
+		for(var k=1; k<(size+1); k++){
+			// create & insert cells of the regular row
+			var rcell = x.getElementsByTagName("tr")[j].appendChild(document.createElement("td"));
+			// populate & style the cell
+			x.getElementsByTagName("tr")[j].getElementsByTagName("td")[k-1].textContent = 
+				"( " + (rcell.cellIndex+1) + " , " + row.rowIndex + " )";
+			x.getElementsByTagName("tr")[j].getElementsByTagName("td")[k-1].style.border = "2px solid lightblue";
+			x.getElementsByTagName("tr")[j].getElementsByTagName("td")[k-1].style.textAlign = "center";
+		}
+	}
+}
+
+var size = 4;
+buildTable(document.body,size);
+
+var apiKey = 'ee6...2f';
+document.addEventListener('DOMContentLoaded', getWeather);
+document.addEventListener('DOMContentLoaded', signGuestbook);
+
+/**********************************************************
+getWeather function connects to Open Weather Map API, lets a user 
+input a city or a zip code and asynchronously shows the weather 
+information retrieved from Open Weather Map (via a GET).
+***********************************************************/
+function getWeather(){
+    document.getElementById('submit').addEventListener('click', function(event){
+
+      var req = new XMLHttpRequest();
+      var input = {city:null,zip:null};
+      input.city = document.getElementById('city').value;
+      input.zip = document.getElementById('zip').value;
+
+      if(input.zip > 1){
+        req.open('GET', 'http://api.openweathermap.org/data/2.5/weather?zip='
+          + input.zip + ",us&APPID=" + apiKey, true);
+        req.addEventListener('load',function(){
+          if(req.status >= 200 && req.status < 400)
+              var response = JSON.parse(req.responseText);
+              document.getElementById('cityOutput').textContent = response.name;
+              document.getElementById('tempOutput').textContent = response.main.temp;
+              document.getElementById('humidOutput').textContent = response.main.humidity;
+        });
+        req.send(null);
+      }
+      else if(input.city != null){
+        req.open('GET', 'http://api.openweathermap.org/data/2.5/weather?q='
+          + input.city + "&APPID=" + apiKey, true);
+        req.addEventListener('load',function(){
+          if(req.status >= 200 && req.status < 400)
+              var response = JSON.parse(req.responseText);
+              document.getElementById('cityOutput').textContent = response.name;
+              document.getElementById('tempOutput').textContent = response.main.temp;
+              document.getElementById('humidOutput').textContent = response.main.humidity;
+        });
+        req.send(null);
+      }
+      else{
+        alert("Error. Please try again.");
+      }
+      event.preventDefault();
+    });
+}
+
+/**********************************************************
+signGuestbook function allows the user to sign a guestbook
+via an html form on the webpage and submits the information
+via a POST request.
+***********************************************************/
+function signGuestbook(){
+  document.getElementById('submit2').addEventListener('click', function(event){
+
+    var req2 = new XMLHttpRequest();
+    var input2 = {name:null, message:null};
+    input2.name = document.getElementById('name').value;
+    input2.message = document.getElementById('message').value;
+
+    req2.open('POST', 'https://httpbin.org/post', true);
+    req2.setRequestHeader('Content-Type', 'application/json');
+    req2.addEventListener('load',function(){
+      if(req2.status >= 200 && req2.status < 400){
+        var response2 = JSON.parse(req2.responseText);
+        document.getElementById('nameOutput').textContent = JSON.parse(response2.data).name;
+        document.getElementById('messageOutput').textContent = JSON.parse(response2.data).message;
+      } 
+      else 
+        console.log("Error in network request: " + req2.statusText);
+    });
+    req2.send(JSON.stringify(input2));
+    event.preventDefault();
+  }
+);
+
+/**********************************************************
+Automobile array functions
+***********************************************************/
+// Automobile class constructor
+function Automobile( year, make, model, type ){
+    this.year = year;   // integer (ex. 2001, 1995)
+    this.make = make;   // string (ex. Honda, Ford)
+    this.model = model; // string (ex. Accord, Focus)
+    this.type = type;   // string (ex. Pickup, SUV)
+}
+
+// declare an array of Automobile objects
+var automobiles = [ 
+    new Automobile(1995, "Honda", "Accord", "Sedan"),
+    new Automobile(1990, "Ford", "F-150", "Pickup"),
+    new Automobile(2000, "GMC", "Tahoe", "SUV"),
+    new Automobile(2010, "Toyota", "Tacoma", "Pickup"),
+    new Automobile(2005, "Lotus", "Elise", "Roadster"),
+    new Automobile(2008, "Subaru", "Outback", "Wagon")
+    ];
+    
+/**********************************************************
+sortArr() sorts array using an arbitrary comparator 
+Receives: a comparator function & an array of objects 
+Returns: a new array which is sorted with the largest object  
+         in index [0] and the smallest in the last index 
+***********************************************************/
+function sortArr( comparator, array ){
+    var temp = buildArray(array);
+    var count = array.length;
+
+    for(var i=0; i<count; i++){
+        for(var j=0; j<temp.length; j++) {
+            if(comparator( temp[i],temp[j] )){
+                temp2 = temp[i]
+                temp[i] = temp[j];
+                temp[j] = temp2;
+            }
+            else // do nothing
+        }
+    }
+    return temp;
+}
+
+/**********************************************************
+buildArray() is a helper function for sortArr(). It copies
+        the objects in an array to a new array.
+Receives: an array of objects
+Returns: a new array which contains the copied objects
+***********************************************************/
+function buildArray( array ){
+    var temp = [];
+
+    for(var i=0; i<array.length; i++){
+        temp[i] = Object.assign( {}, array[i] );
+        temp[i].__proto__ = array[i].__proto__;
+    }
+    return temp;
+}
+
+/**********************************************************
+yearComparator() compares two automobiles based on their year. 
+         Newer cars are "greater" than older cars.
+Receives: two Automobile objects
+Returns: true/false
+***********************************************************/
+function yearComparator( auto1, auto2 ){
+    if(auto1.year > auto2.year){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+/**********************************************************
+logMe() is added to the Automobile class
+    Each line representing a car should be produced via logMe()
+Receives: one boolean 
+    If 'true' print: "year make model type" 
+    If 'false' print: "year make model" (type is ommited)
+Returns: nothing
+***********************************************************/
+Automobile.prototype.logMe = function( booleanArg ) { 
+    if(booleanArg){
+        console.log(this.year + " " + this.make + " " + this.model + " " + this.type);
+    }
+    else{
+        console.log(this.year + " " + this.make + " " + this.model);
+    }
+};
+
+/**********************************************************
+printItems() loops through the Automobile array and console.logs each element 
+Receives: array
+Returns: nothing
+***********************************************************/
+function printItems( array ){
+    for(var i=0; i<array.length; i++){
+        array[i].logMe.call(array[i],true);
+    }
+    console.log("\n");
+}
+
+/**********************************************************
+OUTPUT & TESTING
+- output using console.log
+- Each line is a separate call to console.log.
+***********************************************************/
+console.log("All of the cars:");
+printItems( automobiles);
+
+console.log("The cars sorted by year are:");
+printItems( sortArr(yearComparator,automobiles) );

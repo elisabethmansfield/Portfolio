@@ -1,0 +1,197 @@
+; Author: Elisabeth Mansfield 
+; Course: CS271 - Computer Architecture & Assembly Language
+; Description: This program composites numbers. 
+; First, the user is instructed to enter the number of composites to be displayed, 
+; and is prompted to enter an integer in the range [1 .. 400]. 
+; The user enters a number, n, and the program verifies that 1 = n = 400. 
+; If n is out of range, the user is re-prompted until s/he enters a value in the specified range. 
+; The program then calculates and displays all of the composite numbers up to and including the nth composite. 
+; The results should be displayed 10 composites per line with at least 3 spaces between the numbers.
+
+; include library provided by Irvine textbook
+INCLUDE Irvine32.inc
+
+.data ; (variable definitions)
+	beginTitle	BYTE "Welcome to Composite Numbers!",0Dh,0Ah,0
+	numPrompt1	BYTE "How many composite numbers you would like to see? [1 .. 400]: ",0Dh,0Ah,0
+	validation	BYTE "Out of range.",0Dh,0Ah,0
+	contMess	BYTE "Continue? [YES: 0, NO: 1]",0Dh,0Ah,0
+	align			BYTE "Output columns aligned.",0Dh,0Ah,0
+	dispMore	BYTE "Displayed more composites.",0Dh,0Ah,0
+	endTitle	BYTE "Results certified.",0Dh,0Ah,0
+	goodbye		BYTE "Goodbye!",0
+	userValue	DWORD 0
+	count		DWORD 0
+	composite	DWORD 4
+	lineCount	DWORD 0
+
+.code ; (executable instructions)
+
+; main procedure
+main PROC
+	call intro
+	call getUserData
+	call isComposite
+	call farewell
+	exit	; exit to operating system
+main ENDP
+
+; introduction procedure
+intro PROC
+	; display program title, programmer's name
+	mov edx,OFFSET beginTitle
+	call WriteString
+	ret
+intro ENDP
+
+; getUserData procedure
+getUserData PROC
+	; prompt user to enter number
+	mov edx,OFFSET numPrompt1
+	call WriteString
+
+	; get input
+	call ReadInt
+	mov userValue,eax
+	call validate
+	ret
+getUserData ENDP
+
+; validate procedure
+validate PROC
+	; validate user input
+	mov eax,userValue
+	cmp eax,1
+	jb L1			; jump if out of range, less
+	cmp eax,400		
+	ja L1			; jump if out of range, greater
+	jmp L2
+L1:	mov edx,OFFSET validation
+	call WriteString
+	call getUserData
+L2:
+	ret
+validate ENDP
+
+; showComposites procedure
+showComposites PROC
+	; display composites, 10 per line, spaced apart
+	mov eax,composite
+	call WriteDec
+	; Align the output columns
+	mov al,9
+	call WriteChar
+	inc lineCount
+	cmp lineCount,10
+	je L1
+	jmp L2
+L1:
+	call Crlf
+	mov lineCount,0
+L2: 
+	ret
+showComposites ENDP
+
+; isComposite procedure
+isComposite PROC
+
+	mov ecx,userValue	; set loop count
+	mov count,ecx		; save loop count
+	add count,2
+L1: 
+	dec count
+
+	; composite of 2
+	call comp2
+	cmp edx,0
+	je L2
+
+	; composite of 3
+	call comp3
+	cmp edx,0
+	je L2
+
+	; composite of 5
+	cmp composite,5
+	je L4
+	mov edx,0			; clear dividend, high
+	mov eax,composite	; dividend, low
+	mov ebx,5			; divisor
+	div ebx
+	cmp edx,0
+	je L2
+
+L4:	; composite of 7
+	cmp composite,7
+	je L3
+	mov edx,0			; clear dividend, high
+	mov eax,composite	; dividend, low
+	mov ebx,7			; divisor
+	div ebx
+	cmp edx,0
+	je L2
+
+	; else
+	inc count
+	jmp L3
+
+L2:
+	call showComposites
+
+L3:
+	inc composite
+	mov ecx,count		; restore loop count
+	loop L1				; repeat loop
+	call continue
+	ret
+isComposite ENDP
+
+; composite of 2
+comp2 PROC
+	mov edx,0			; clear dividend, high
+	mov eax,composite	; dividend, low
+	mov ebx,2			; divisor
+	div ebx
+	ret
+comp2 ENDP
+
+; composite of 3
+comp3 PROC
+	mov edx,0			; clear dividend, high
+	mov eax,composite	; dividend, low
+	mov ebx,3			; divisor
+	div ebx
+	ret
+comp3 ENDP
+
+; continue procedure
+continue PROC
+	call Crlf
+	mov eax,1
+	mov edx,OFFSET contMess
+	call WriteString
+	call ReadInt
+	cmp eax,0
+	je L1
+	jmp L2
+L1: call isComposite
+L2:	ret
+continue ENDP
+
+; farewell procedure
+farewell PROC
+	; display personalized parting message
+	call Crlf
+	mov edx,OFFSET endTitle
+	call WriteString
+	mov edx,OFFSET align
+	call WriteString
+	mov edx,OFFSET dispMore
+	call WriteString
+	mov edx,OFFSET goodbye
+	call WriteString
+	call Crlf
+	ret
+farewell ENDP
+
+END main

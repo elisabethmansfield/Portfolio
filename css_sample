@@ -1,0 +1,70 @@
+/* 
+Elisabeth Mansfield
+CS290 - Web Development
+*/
+
+
+caption{
+	color: red;
+	font-weight: bold;
+	font-size: 20px;
+}
+
+th{
+	border: 2px solid black;
+	text-align: center;
+	padding: 10px;
+}
+
+td{
+	border: 1px solid black;
+	text-align: center;
+	padding: 10px;
+}
+
+.firstCol{
+	border-width: 1px;
+	font-weight: normal;
+	font-style: italic;
+}
+
+table tbody tr:nth-of-type(odd){
+	background: lightgreen;
+}
+
+table tbody tr:nth-of-type(even){
+	background: lightgrey;
+}
+
+.outer-content{
+	width: 75%;
+	margin-top: 20px;
+	background: pink;
+	padding: 20px;
+}
+
+.inner-content{
+	background: lightblue;
+	width: 75%;
+	margin: 0 auto;
+	text-align: center;
+	font-weight: bold;
+	border: 1px solid black;
+	padding: 5px;
+}
+
+form{
+	margin-top: 2px;
+	border: 1px solid black;
+	padding: 5px;
+}
+
+form div{
+	padding: 10px;
+	margin: 3px;
+	border: .1px dotted black;
+}
+
+.no-border{
+	border: none;
+}

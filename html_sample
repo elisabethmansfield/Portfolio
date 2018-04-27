@@ -1,0 +1,165 @@
+<!-- 
+Elisabeth Mansfield
+CS290 - Web Development
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>May The Odds</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<!-- Table Here: -->
+	<table>
+		<caption>Participants of the 75th Annual Hunger Games:</caption>
+		<thead>
+			<tr>
+				<th></th>
+				<th>District</th>
+				<th>Victory</th>
+				<th>Skill</th>
+				<th>Score</th>
+				<th>Probability</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th class="firstCol">Katniss</th>
+				<td>12</td>
+				<td>74th</td>
+				<td>archery</td>
+				<td>12</td>
+				<td>94%</td>
+			</tr>
+			<tr>
+				<th class="firstCol">Finnick</th>
+				<td>4</td>
+				<td>65th</td>
+				<td>trident</td>
+				<td>11</td>
+				<td>89%</td>
+			</tr>
+			<tr>
+				<th class="firstCol">Peeta</th>
+				<td>12</td>
+				<td>74th</td>
+				<td>combat</td>
+				<td>12</td>
+				<td>82%</td>
+			</tr>
+			<tr>
+				<th class="firstCol">Johanna</th>
+				<td>7</td>
+				<td>71st</td>
+				<td>axe</td>
+				<td>9</td>
+				<td>76%</td>
+			</tr>
+			<tr>
+				<th class="firstCol">Beetee</th>
+				<td>3</td>
+				<td>40th</td>
+				<td>engineer</td>
+				<td>9</td>
+				<td>53%</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="2">&copy; <em>Panem</em>
+				</td>
+				<td colspan="4">May the odds be ever in your favor!
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+
+<!-- List Here: -->
+	<h3>Top Contenders:</h3>
+	<ol>
+  		<li>Katniss Everdeen</li>
+  		<li>Finnick Odair</li>
+  		<li>Peeta Mellark</li>
+	</ol>
+
+<!-- Div Here: -->
+	<div class="outer-content">
+		<div class="inner-content">
+			Register for the viewing event below:
+		</div>
+	</div>
+
+<!-- Post Form Here: -->
+	<form action="http://classes.engr.oregonstate.edu/check_request.php" method="post">
+		<div>
+			<label>Full Name:
+				<input type="text" name="text_input" placeholder=" Enter name" required>
+			</label>
+		</div>
+		<div>
+			<label>User ID Number:
+				<input type="number" name="numerical_input" placeholder=" Enter user id #" required>
+			</label>
+		</div>
+		<div>
+			<label>Password:
+				<input type="password" name="password_input" placeholder=" Enter password" required>
+			</label>
+		</div>
+		<div>
+			<label>Snack Selection Choice:
+				<div class="no-border">
+					Snickers: <input type="radio" name="candy" value="snickers">
+				</div>
+				<div class="no-border">
+					Skittles: <input type="radio" name="candy" value="skittles">
+				</div>
+				<div class="no-border">
+					Mentos: <input type="radio" name="candy" value="mentos">
+				</div>
+			</label>
+		</div>
+		<div class="no-border">
+			<button>Submit</button>
+		</div>
+	</form>
+
+<!-- Get Form Here: -->
+	<form action="http://classes.engr.oregonstate.edu/check_request.php" method="get">
+		<div>
+			<label>Full Name:
+				<input type="text" name="text_input" placeholder=" Enter name" required>
+			</label>
+		</div>
+		<div>
+			<label>User ID Number:
+				<input type="number" name="numerical_input" placeholder=" Enter user id #" required>
+			</label>
+		</div>
+		<div>
+			<label>Password:
+				<input type="password" name="password_input" placeholder=" Enter password" required>
+			</label>
+		</div>
+		<div>
+			<label>Snack Selection Choice:
+				<div class="no-border">
+					Snickers: <input type="radio" name="candy" value="snickers">
+				</div>
+				<div class="no-border">
+					Skittles: <input type="radio" name="candy" value="skittles">
+				</div>
+				<div class="no-border">
+					Mentos: <input type="radio" name="candy" value="mentos">
+				</div>
+			</label>
+		</div>
+		<div class="no-border">
+			<button>Submit</button>
+		</div>
+	</form>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ CS290 - Web Development
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="stylesheets/home.css">
 	<title>{{title}}</title>
 </head>
 <body>
@@ -22,4 +23,6 @@ CS290 - Web Development
 			<li> {{this.key}}: {{this.value}} </li>
 		{{/each}}
 	</ul></body>
+	
+	<script src="scripts/home.js"></script>
 </html>

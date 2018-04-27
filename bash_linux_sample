@@ -1,0 +1,297 @@
+#!/bin/bash
+# Elisabeth Mansfield 
+# CS344 - Operating Systems
+
+# create temp files
+tmp1="$(mktemp --tmpdir p1temp_XXXXX)"
+tmp2="$(mktemp --tmpdir p1temp_XXXXX)"
+tmp3="$(mktemp --tmpdir p1temp_XXXXX)"
+tmp4="$(mktemp --tmpdir p1temp_XXXXX)"
+tmp5="$(mktemp --tmpdir p1temp_XXXXX)"
+tmp6="$(mktemp --tmpdir p1temp_XXXXX)"
+
+# trap command
+trap remove 1 2 3 6
+
+# remove temp files
+remove(){
+for i in $tmp{1..6}
+do
+  rm -f "$i"
+done
+echo "Trap triggered" >&2
+exit 1
+}
+
+# dims function
+# calculates and displays the dimensions of a matrix
+dims(){
+ # rows:  
+ wc -l < $1 | tr '\n' '\ '
+ # columns:
+ head -1 $1 | wc -w
+}
+
+# transpose function
+# transposes the elements of a matrix along the main diagonal
+transpose(){
+ ROW1=$(wc -l < $1)
+ COL1=$(head -1 $1 | wc -w)
+ _COL1=$(head -1 $1 | wc -m)
+ colCount=1
+ count=1
+
+ # loop through columns of $1
+ while [ "$colCount" -le "$COL1" ]; do
+   cat $1 | cut -f $colCount > $tmp1
+
+   # read lines from $1
+   while read line; do
+	if [ "$count" -lt "$ROW1" ]; then
+	  echo -n -e $line'\t' 
+	else echo -e $line 
+	fi
+   (( count++ ))
+   done < $tmp1
+   
+ count=1
+ (( colCount++ ))
+ done
+}
+
+# mean function
+# calculates and displays the mean values of each column in a matrix
+mean(){
+ ROW1=$(wc -l < $1)
+ COL1=$(head -1 $1 | wc -w)
+ _COL1=$(head -1 $1 | wc -m)
+ colCount=1
+ rowCount=1
+ sum=0
+ mean=0
+
+ # loop through columns of $1
+ while [ "$colCount" -le "$COL1" ]; do
+   cat $1 | cut -f $colCount > $tmp2
+
+	# loop through rows of $1
+	while read line; do
+     	if [[ ( $line =~ ^-?[0-9]+$ ) ]]; then
+	  sum=$(( $sum + $line ))
+	fi 
+	done < $tmp2
+
+   # if sum is a number, calculate mean
+   #(a + (b/2)*( (a>0)*2-1 )) / b
+   if [[ ( $sum =~ ^-?[0-9]+$ ) ]]; then
+   pos=$(( $sum > 0 ))
+   pos=$(( $pos * 2 - 1 ))
+   mean=$(( ( $sum + ( $ROW1 / 2 ) * $pos ) / $ROW1 ))
+
+   if [ "$colCount" -eq "$COL1" ]; then
+      printf "%d\n" "$mean"
+   elif [ "$colCount" -gt "$COL1" ]
+   then
+      # do nothing
+      x=1
+   else
+      printf "%d\t" "$mean"
+   fi
+   fi
+  
+   sum=0
+   ((colCount++))
+ done 
+}
+
+# add function
+# adds two matrices together element-wise
+add(){
+ ROW1=$(wc -l < $1)
+ ROW2=$(wc -l < $2)
+ COL1=$(head -1 $1 | wc -w)
+ COL2=$(head -1 $2 | wc -w)
+
+ # if matrix dimensions do not match
+ if [[ ( "$ROW1" -ne "$ROW2" ) || ( "$COL1" -ne "$COL2" ) ]]
+ then
+  echo "Error: matrices do not have same dimensions." >&2
+  exit 1 
+
+ # if matrix dimensions match
+ elif [[ ( "$ROW1" -eq "$ROW2" ) && ( "$COL1" -eq "$COL2" ) ]]
+ then
+	sum=0
+	colCount=1
+	cat $1 | tr '\t' '^' | tr '\n' '^' > $tmp4
+	cat $2 | tr '\t' '^' | tr '\n' '^' > $tmp5
+
+	while read -d '^' a <&3 && read -d '^' b <&4; do
+		if [[ ( $a =~ ^-?[0-9]+$ ) && ( $b =~ ^-?[0-9]+$ ) ]]; then
+	         	sum=$(( $a + $b ))
+			if [ $colCount -eq $COL1 ]; then
+				printf "%d\n" "$sum"
+				colCount=0
+			else printf "%d\t" "$sum"
+		     fi
+		fi
+		((colCount++))
+	done 3<$tmp4 4<$tmp5
+
+ else echo "Error" >&2
+  exit 1
+ fi
+}
+
+# multiply function
+# multiplies two matrices together
+multiply(){
+ ROW1=$(wc -l < $1)
+ ROW2=$(wc -l < $2)
+ COL1=$(head -1 $1 | wc -w)
+ COL2=$(head -1 $2 | wc -w)
+ _COL1=$(head -1 $1 | wc -m)
+ _COL2=$(head -1 $2 | wc -m)
+
+ # if matrix dimensions to not meet requirements
+ if [[ ( "$COL1" -ne "$ROW2" ) ]]
+ then
+  echo "Error: matrices do not have allowable dimensions." >&2 
+  exit 1
+
+ # if matrix dimensions are okay
+ elif [[ ( "$COL1" -eq "$ROW2" ) ]]
+ then
+ 	Arowcount=1
+	Browcount=1
+ 	Acolcount=1
+ 	Bcolcount=1
+	bool=0
+
+ 	# loop through rows of A 
+ 	while read Arow; do
+
+ 		# loop through columns of B, convert to row file
+ 		while [ "$Bcolcount" -le "$COL2" ]; do
+  		# get B column
+  		cat $2 | cut -f $Bcolcount | tr '\n' '\t' > $tmp3
+
+  			# loop through columns of A
+ 	 		while [ "$Acolcount" -le "$COL1" ]; do
+			Browcount=1	
+			Aval=$( echo -n "$Arow" | cut -f $Acolcount )
+				# if Aval is a number
+				if [[ ( $Aval =~ ^-?[0-9]+$ ) ]]; then
+	    					# loop through rows of B
+						while [ "$Browcount" -le "$COL1" ]; do
+						Bval=$( cat $tmp3 | cut -f $Browcount )
+							# if Bval is a number
+							if [[ ( $Bval =~ ^-?[0-9]+$ ) ]]; then
+			   					 if [ "$Browcount" -eq "$Acolcount" ]; then
+									sum=$(( sum + ((Aval * Bval)) ))
+									bool=1
+			    					 fi
+							fi
+		    					((Browcount++))
+	    					done < $tmp3 	# rows of B
+				fi
+	   					((Acolcount++))
+  			done 		# cols of A
+			if [ "$bool" -eq "1" ]; then
+				printf "%d" "$sum" 
+			fi
+			if [ "$Bcolcount" -ne "$COL2" ]; then
+				printf "\t" 
+			fi
+			Acolcount=1
+			Browcount=1
+			sum=0; bool=0
+ 			((Bcolcount++))
+ 		done 		# cols of B
+			printf "\n" 		
+		Bcolcount=1
+ 		((Arowcount++))
+ 	done <$1 	# rows of A
+
+ else echo "Error" >&2
+   exit 1
+ fi
+}
+
+#### test input values ####
+input=$tmp6
+# if input is received from stdin
+if [ "$#" = "1" ]; then       
+    cat > "$input"
+# if 1-2 file inputs
+elif [[ "$#" -eq "2" || "$#" -eq "3" ]]; then  
+ if [[ -a $2 && -r $2 ]]; then	# if file 2 is valid
+    input=$2
+ else echo "Invalid first argument" >&2
+    exit 1
+ fi
+
+ if [[ "$#" -eq "3" ]]; then
+     if ! [[ -a $3 && -r $3 ]]; then
+      echo "Invalid second argument" >&2
+      exit 1
+     fi
+ fi
+# if 3+ inputs
+else
+ echo "Invalid number of arguments" >&2
+ exit 1
+fi
+
+#### call programs ####
+if [ "$1" == "dims" ]; then		# DIMS: 1 arg or stdin
+  if [[ "$#" -le "2" ]]; then
+   dims $input
+  else
+   echo "Invalid number of arguments" >&2
+   exit 1
+  fi
+
+elif [ "$1" == "transpose" ]; then	# TRANSPOSE: 1 arg or stdin
+  if [[ "$#" -le "2" ]]; then
+   transpose $input
+  else
+   echo "Invalid number of arguments" >&2
+   exit 1
+  fi
+
+elif [ "$1" == "mean" ]; then		# MEAN: 1 arg or stdin
+  if [[ "$#" -le "2" ]]; then
+   mean $input
+  else
+   echo "Invalid number of arguments" >&2
+   exit 1
+  fi
+
+elif [ "$1" == "add" ]; then		# ADD: 2 arg (no stdin)
+  if [[ "$#" -eq "3" ]]; then
+   add $2 $3
+  else
+   echo "Invalid number of arguments" >&2
+   exit 1
+  fi
+
+elif [ "$1" == "multiply" ]; then	# MULTIPLY: 2 arg (no stdin)
+  if [[ "$#" -eq "3" ]]; then
+   multiply $2 $3
+  else
+   echo	 "Invalid number of arguments" >&2
+   exit 1
+  fi
+
+else
+ echo "Invalid input!" >&2
+ exit 1
+fi
+
+for i in $tmp{1..6}
+do
+  rm -f "$i"
+done
+
+exit 0

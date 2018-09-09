@@ -1,5 +1,18 @@
 /**********************************************************
-Elisabeth Mansfield 
+Author: Elisabeth Mansfield 
+Description: A diverse sample of JavaScript functions.
+- buildTable creates an HTML table using the JS DOM
+- getWeather connects to Open Weather Map API, lets a user 
+input a city or a zip code and asynchronously shows the weather 
+information retrieved from Open Weather Map (via a GET).
+- signGuestbook allows the user to sign a guestbook
+via an HTML form on the webpage and submits the information
+via a POST request.
+- Automobile array functions: class constructor, declare an 
+array of objects, sort array using an arbitrary comparator,
+copy objects between arrays, compare items of the array, 
+add method to the class, loop through the array and output
+the contents via console.log
 ***********************************************************/
 
 /**********************************************************

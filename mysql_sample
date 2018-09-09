@@ -1,4 +1,10 @@
-/* Elisabeth Mansfield */
+/* 
+Author: Elisabeth Mansfield 
+Description: A selection of functions and routes for
+displaying Order pages of an ecommerce company. Includes
+MySQL queries for selecting, adding, updating, deleting,
+and displaying Orders for a user's account.
+*/
 
 module.exports = function(){
     var express = require('express'),

@@ -1,6 +1,5 @@
 #!/bin/bash
 # Elisabeth Mansfield 
-# CS344 - Operating Systems
 
 # create temp files
 tmp1="$(mktemp --tmpdir p1temp_XXXXX)"

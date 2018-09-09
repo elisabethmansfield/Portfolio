@@ -1,5 +1,13 @@
 /*********************************************************************
- ** Elisabeth Mansfield 
+ Author: Elisabeth Mansfield 
+ Description: Fantasy Combat Game Tournament 
+ The tournament involves two players. Each player chooses their lineup 
+ from the cast of characters and gives them a unique nickname. The characters 
+ are added to the player’s queue in order of selection. After each round of combat,
+ the losing character is moved to the shared loser stack. The winning character 
+ recoveres a portion of their strength points and is queued at the rear of 
+ the winning player’s line up. The tournament continues until one or both 
+ players have an empty queue. The player with the most winning games is the victor.
  *********************************************************************/
  
 /*********************************************************************

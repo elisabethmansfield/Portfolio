@@ -1,0 +1,38 @@
+#!/usr/bin/python
+# Elisabeth Mansfield 
+
+# import modules
+from random import randint
+import os 
+import sys
+
+for i in range(3):
+
+	# create 3 files, delete if exists
+	filename = "file" + str(i) + ".txt"
+	if os.path.exists(filename):
+		os.remove(filename)
+	f = open(filename,"a+")
+
+	# fill files with 10 random chars and \n 
+	for j in range(10):
+		randchar = randint(97,122)
+		randchar = chr(randchar)
+		f.write("%c" %randchar)		
+
+		# send contents to stdout
+		sys.stdout.write("%c" %randchar)
+	f.write("\n")
+	print("")
+	f.close()
+
+# print two random ints [1-42]
+rando1 = randint(1,42)
+print("%d" %rando1)
+
+rando2 = randint(1,42)
+print("%d" %rando2)
+
+# print out product of the ints
+product = rando1 * rando2
+print("%d" %product)

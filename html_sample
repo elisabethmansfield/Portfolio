@@ -1,4 +1,9 @@
-<!-- Elisabeth Mansfield -->
+<!-- 
+Author: Elisabeth Mansfield
+Description: A basic HTML page which includes a
+table, ordered list, nested divs, POST request form,
+and GET request form.
+-->
 
 <!DOCTYPE html>
 <html>
@@ -89,7 +94,7 @@
 	</div>
 
 <!-- Post Form Here: -->
-	<form action="http://classes.engr.oregonstate.edu/check_request.php" method="post">
+	<form action="http://example.com/example.php" method="post">
 		<div>
 			<label>Full Name:
 				<input type="text" name="text_input" placeholder=" Enter name" required>
@@ -124,7 +129,7 @@
 	</form>
 
 <!-- Get Form Here: -->
-	<form action="http://classes.engr.oregonstate.edu/check_request.php" method="get">
+	<form action="http://example.com/example.php" method="get">
 		<div>
 			<label>Full Name:
 				<input type="text" name="text_input" placeholder=" Enter name" required>

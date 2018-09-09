@@ -1,0 +1,351 @@
+/* Elisabeth Mansfield */
+
+module.exports = function(){
+    var express = require('express'),
+        router = express.Router();
+
+    // function to SELECT all Orders
+    function getOrders(res, mysql, context, complete){
+        mysql.pool.query("SELECT * FROM `order`", 
+            function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+            context.order = results;
+	    complete();
+        });
+    }
+
+    // function to SELECT a specific Order
+    function getOrder(res, mysql, context, orderDate, orderTotal, complete2){
+        var sql = "SELECT orderID FROM `order` WHERE orderDate=? AND orderTotal=? ORDER BY orderID DESC LIMIT 1",
+            inserts = [orderDate,orderTotal];
+        mysql.pool.query(sql, inserts, function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+         	context.orderID = results[0].orderID;
+		      complete2();
+        });
+    }
+
+    // function to SELECT a specific Order from table to update
+    function getOrderEdit(context, orderID, productID){
+	for(var i=0;i<context.table.length;i++){
+		if(context.table[i].orderID == orderID && context.table[i].productID == productID)
+			context.selectorder = context.table[i];
+	}
+    }
+
+    // function to get productPrice
+    function getProductPrice(res, mysql, context, id, complete){
+	var sql = "SELECT productPrice FROM product WHERE productID=?",
+	    inserts = [id];
+	mysql.pool.query(sql, inserts, function(error, results, fields){
+	    if(error){
+		res.write(JSON.stringify(error));
+		res.end();
+	    }
+	    context.productPrice = results[0].productPrice;
+	    complete();
+	});
+    }
+
+    // function to get orderTotal
+    function getOrderTotal(res, mysql, context, complete2){
+	var sql = "SELECT orderTotal FROM `order` WHERE orderID=?",
+	    inserts = [context.orderID];
+	mysql.pool.query(sql, inserts, function(error, results, fields){
+	    if(error){
+		res.write(JSON.stringify(error));
+		res.end();
+	    }
+	    context.orderTotal += results[0].orderTotal;
+	    complete2();
+	});
+    }
+
+    // function to edit orderTotal after delete
+    function getNewOrderTotal(res, mysql, context, complete2){
+	var sql = "SELECT orderTotal FROM `order` WHERE orderID=?",
+	    inserts = [context.orderID];
+	mysql.pool.query(sql, inserts, function(error, results, fields){
+	    if(error){
+		res.write(JSON.stringify(error));
+		res.end();
+	    }
+	    context.orderTotal = results[0].orderTotal - context.orderTotal;
+	    complete2();
+	});
+    }
+
+    // function to get the products in an order
+    function getOrderProducts(res, mysql, context, complete3){
+	var sql = "SELECT productID FROM `order_product` WHERE orderID=?",
+	    inserts = [context.orderID];
+	mysql.pool.query(sql, inserts, function(error, results, fields){
+	    if(error){
+		res.write(JSON.stringify(error));
+		res.end();
+	    }
+	    context.orderproducts = results;
+	    complete3();
+	});
+    }
+
+    // function to SELECT all order_user
+    function getOrderUsers(res, mysql, context, complete){
+        mysql.pool.query("SELECT * FROM `order_user`", function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+         	context.orderusers = results;
+		complete();
+        });
+    }
+
+    // function to SELECT all Users
+    function getUsers(res, mysql, context, complete){
+        mysql.pool.query("SELECT * FROM user", function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+            context.user = results;
+            complete();
+        });
+    }
+
+    // function to SELECT all Products
+    function getProducts(res, mysql, context, complete){
+        mysql.pool.query("SELECT * FROM product", function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+            context.product = results;
+            complete();
+        });
+    }
+
+    // function to build giant table
+    function getBuildTable(res, mysql, context, complete){
+        mysql.pool.query("select * from user, `order`, product, order_user, order_product where user.userID=order_user.userID and `order`.orderID=order_user.orderID and `order`.orderID=order_product.orderID and product.productID=order_product.productID order by `order`.orderID;", function(error, results, fields){
+            if(error){
+                res.write(JSON.stringify(error));
+                res.end();
+            }
+            context.table = results;
+	    for(var i=0;i<context.table.length;i++){
+		context.table[i].orderTotal = context.table[i].productPrice * context.table[i].quantity;
+      	    }
+            complete();
+        });
+    }
+
+    // route to display all Orders (using Ajax)
+    router.get('/', function(req, res){
+        var callbackCount = 0,
+            context = {},
+            mysql = req.app.get('mysql');
+        context.jsscripts = ["scripts/deleteorder.js","scripts/orderChecked.js"];
+        getOrders(res, mysql, context, complete);
+	getOrderUsers(res, mysql, context, complete);
+	getUsers(res, mysql, context, complete);
+	getProducts(res, mysql, context, complete);
+	getBuildTable(res, mysql, context, complete);
+	function complete(){
+	    callbackCount++;
+	    if(callbackCount >= 5){
+		res.render('order',context);
+   	    }
+	}
+    });
+
+    // route to display a specific Order (to update)
+    router.get('/:oid/:pid', function(req, res){
+        var context = {},
+	    callbackCount = 0,
+            mysql = req.app.get('mysql');
+        context.jsscripts = ["scripts/updateorder.js"];
+	getUsers(res, mysql, context, complete);
+	getProducts(res, mysql, context, complete);
+	getBuildTable(res, mysql, context, complete);
+	function complete(){
+	    callbackCount++;
+	    if(callbackCount >= 3){
+		getOrderEdit(context, req.params.oid, req.params.pid);
+		for(var i=0;i<context.product.length;i++){
+			if(context.product[i].productID == req.params.pid)
+				context.product[i].selected = 1;
+		}		
+		for(var i=0;i<context.user.length;i++){
+			if(context.user[i].userID == context.selectorder.userID)
+				context.user[i].selected = 1;
+		}
+		res.render('updateorder',context);
+	    }
+	}
+    });
+
+    // route to add an Order
+    router.post('/', function(req, res){
+        console.log(req.body);
+        var context = {},
+	    mysql = req.app.get('mysql');
+	context.orderID = req.body.order; 
+	// if existing order
+	if(req.body.order != 0){ 
+		context.inOrder = 0;
+		getOrderProducts(res,mysql,context,complete3);
+		function complete3(){
+			for(var i=0;i<context.orderproducts.length;i++){
+				if(context.orderproducts[i].productID == req.body.product){
+					context.inOrder = 1;
+				}
+			}
+		if(context.inOrder == 1){
+			res.redirect('duplicateorder');
+		}else{
+		var sql = "INSERT INTO `order_product` (orderID,productID,quantity) VALUES (?,?,?)",
+		    inserts = [context.orderID,req.body.product,req.body.quantity];
+		sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+         	    if(error){ console.log(JSON.stringify(error));res.write(JSON.stringify(error));res.end(); }
+		    else{
+			getProductPrice(res, mysql, context, req.body.product, complete);
+			function complete(){
+   	    		    context.orderTotal = context.productPrice * req.body.quantity;
+			    getOrderTotal(res, mysql, context, complete2);
+	    		    console.log(context.orderTotal);
+			    function complete2(){
+				var sql2 = "UPDATE `order` SET orderTotal=? WHERE orderID=?",
+			    	    inserts2 = [context.orderTotal,context.orderID];
+				sql2 = mysql.pool.query(sql2,inserts2,function(error, results, fields){
+         				if(error){ console.log(JSON.stringify(error));res.write(JSON.stringify(error));res.end(); }
+					else{
+	                    			res.redirect('order');
+					}});}}}});}}
+	} 
+	// if new order
+	else if(req.body.order == 0){
+  	    getProductPrice(res, mysql, context, req.body.product, complete);
+	    function complete(){
+   	    	context.orderTotal = context.productPrice * req.body.quantity;
+	    	console.log(context.orderTotal);
+            	var sql = "INSERT INTO `order` (orderID,orderDate,orderTotal) VALUES (?,?,?)",
+                    inserts = [context.orderID,req.body.date,context.orderTotal];
+            	sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+            		if(error){ console.log(JSON.stringify(error));res.write(JSON.stringify(error));res.end(); }
+               		else{
+    		   	 getOrder(res,mysql,context,req.body.date,context.orderTotal,complete2);
+		   	 function complete2(){
+				var sql2 = "INSERT INTO `order_product` (orderID,productID,quantity) VALUES (?,?,?)",
+			    	    inserts2 = [context.orderID,req.body.product,req.body.quantity];
+				sql2 = mysql.pool.query(sql2,inserts2,function(error, results, fields){
+            		   	    if(error){ console.log(JSON.stringify(error));res.write(JSON.stringify(error));res.end(); }
+			    	    else{
+					var sql3 = "INSERT INTO `order_user` (orderID,userID) VALUES (?,?)",
+				    	    inserts3 = [context.orderID,req.body.user];
+					sql3 = mysql.pool.query(sql3,inserts3,function(error, results, fields){            		    		     	
+					    if(error){ console.log(JSON.stringify(error));res.write(JSON.stringify(error));res.end(); }
+				    	    else{
+               					res.redirect('order');
+				       	    }});}});}}});}
+       }
+    });
+
+    // route to update an Order
+    router.put('/:oid/:pid', function(req, res){
+        console.log(req.body);
+	var context = {},
+	    mysql = req.app.get('mysql');
+	context.orderID = req.params.oid;
+
+	// remove old product from orderTotal
+	getProductPrice(res, mysql, context, req.params.pid, complete);
+	function complete(){
+   	    context.orderTotal = context.productPrice * req.body.oldquantity;
+   	    getNewOrderTotal(res, mysql, context, complete2);
+	    // add new product to orderTotal
+	    function complete2(){
+		getProductPrice(res, mysql, context, req.body.product, complete3);
+		function complete3(){
+		    context.subtotal = context.productPrice * req.body.quantity;
+   	    	    context.orderTotal += context.subtotal;
+  		    var sql = "UPDATE `order` SET orderTotal=? WHERE orderID=?;",
+     		        inserts = [context.orderTotal,req.params.oid];
+    		    sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+ 	           	if(error){ console.log(error);res.write(JSON.stringify(error));res.end(); }
+		    	else{
+			    var sql2 = "UPDATE `order_product` SET productID=?,quantity=? WHERE orderID=? AND productID=?",
+				inserts2 = [req.body.product,req.body.quantity,req.params.oid,req.params.pid];
+        		    sql2 = mysql.pool.query(sql2,inserts2,function(error, results, fields){
+            			if(error){ console.log(error);res.write(JSON.stringify(error));res.end(); }
+	    			else{
+			            var sql3 = "UPDATE `order_user` SET userID=? WHERE orderID=?",
+            				inserts3 = [req.body.user,req.params.oid];
+        			    sql3 = mysql.pool.query(sql3,inserts3,function(error, results, fields){
+            				if(error){ console.log(error);res.write(JSON.stringify(error));res.end(); }
+		    			else{
+             	   			    res.status(202);
+               	 			    res.end();
+           	 			}
+				    });
+				}
+			    });
+			}
+   	     	    });
+		}
+	    }
+	}
+    });
+
+    // route to delete an Order (Ajax returns 202 on success)
+    router.delete('/:oid/:pid/:qty', function(req, res){
+        var context = {},
+	    mysql = req.app.get('mysql');
+	context.orderID = req.params.oid;
+  	getProductPrice(res, mysql, context, req.params.pid, complete);
+	function complete(){
+   	    context.orderTotal = context.productPrice * req.params.qty;
+	    getNewOrderTotal(res, mysql, context, complete2);
+	    function complete2(){
+		console.log(context.orderTotal);
+		// if updating order
+	      if(context.orderTotal > 0){
+            	var sql = "DELETE FROM `order_product` WHERE orderID=? AND productID=?",
+                    inserts = [req.params.oid,req.params.pid];
+        	sql = mysql.pool.query(sql, inserts, function(error, results, fields){
+               	    if(error){ res.write(JSON.stringify(error));res.status(400);res.end(); }
+           	    else{
+			var sql2 = "UPDATE `order` SET orderTotal=? WHERE orderID=?",
+			    inserts2 = [context.orderTotal,req.params.oid];
+        		sql2 = mysql.pool.query(sql2, inserts2, function(error, results, fields){
+	               	    if(error){ res.write(JSON.stringify(error));res.status(400);res.end(); }
+        	   	    else{
+				res.status(202).end();
+			    }
+			});
+            	    }
+       		});
+	      }
+     	      // if deleting order (cascade to order_product and order_user)
+	      else{
+            	var sql = "DELETE FROM `order` WHERE orderID=?",
+                    inserts = [req.params.oid];
+        	sql = mysql.pool.query(sql, inserts, function(error, results, fields){
+               	    if(error){ res.write(JSON.stringify(error));res.status(400);res.end(); }
+           	    else{
+			            res.status(202).end();
+		            }
+		    });
+	      }
+	    }
+	}
+    });
+
+    return router;
+}();

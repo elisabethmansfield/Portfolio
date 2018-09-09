@@ -1,3 +1,5 @@
+/* Elisabeth Mansfield */
+
 var request = require('request'),
     express = require('express'),
     app = express(),

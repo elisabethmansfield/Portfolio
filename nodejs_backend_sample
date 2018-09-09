@@ -1,4 +1,8 @@
-/* Elisabeth Mansfield */
+/* 
+Author: Elisabeth Mansfield 
+Description: A Node.js application that uses separate
+routes for manipulating the data in a MySQL database.
+*/
 
 var request = require('request'),
     express = require('express'),

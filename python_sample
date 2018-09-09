@@ -1,5 +1,9 @@
 #!/usr/bin/python
 # Elisabeth Mansfield 
+# A basic Python script for creating 3 files in the
+# same directory, filling the files with 10 random
+# characters, and printing out the product of two
+# randomly generated integers.
 
 # import modules
 from random import randint

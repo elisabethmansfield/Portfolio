@@ -1,4 +1,8 @@
-<!-- Elisabeth Mansfield -->
+<!-- 
+Author: Elisabeth Mansfield
+Description: A Handlebars.js template for rendering
+a basic HTML page using the Bootstrap CDN
+-->
 
 <!DOCTYPE html>
 <html lang="en">

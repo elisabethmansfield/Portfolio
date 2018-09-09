@@ -1,4 +1,9 @@
-/* Elisabeth Mansfield */
+/* 
+Author: Elisabeth Mansfield 
+Description: Dynamic Array Functions,
+Stack Interface Functions, &
+Bag Interface Functions
+*/
 
 #include <assert.h>
 #include <stdlib.h>

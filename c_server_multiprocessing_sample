@@ -1,6 +1,11 @@
 /**********************************************
- Elisabeth Mansfield 
- (Server-Side Encoding)
+ Author: Elisabeth Mansfield 
+ Description: Server-Side Encoding
+ This program will run in the background as a daemon. Its function is
+ to perform encoding. This program will listen on a particular port/socket. 
+ When a connection is made, it must call accept() to generate the socket 
+ used for actual communication, and then use a separate process to handle 
+ the rest of the transaction, which will occur on the newly accepted socket.
 **********************************************/
 
 #include <assert.h> 

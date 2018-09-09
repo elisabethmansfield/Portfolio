@@ -1,5 +1,4 @@
 ; Author: Elisabeth Mansfield 
-; Course: CS271 - Computer Architecture & Assembly Language
 ; Description: This program composites numbers. 
 ; First, the user is instructed to enter the number of composites to be displayed, 
 ; and is prompted to enter an integer in the range [1 .. 400]. 

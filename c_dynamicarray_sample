@@ -1,7 +1,4 @@
-/*	
-Elisabeth Mansfield
-CS261 - Data Structures
-*/
+/* Elisabeth Mansfield */
 
 #include <assert.h>
 #include <stdlib.h>

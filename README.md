@@ -13,5 +13,5 @@ Introduction to Databases,
 Operating Systems
 
 Courses In Progress:
-Analysis of Algorithms, 
+Introduction to Computer Networks, 
 Software Engineering I

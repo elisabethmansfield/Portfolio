@@ -1,17 +1,22 @@
 # Elisabeth Mansfield
 # Student Portfolio
-# GPA 3.8
+
+## Oregon State University
+## B.S. Computer Science
+## Graduated December 2019
 
 Courses Completed:
-Intro to Computer Science I,
-Intro to Computer Science II,
+Intro to Computer Science I & II,
 Discrete Structures in Computer Science,
 Computer Architecture & Assembly Language,
 Data Structures,
 Web Development,
-Introduction to Databases,
-Operating Systems
-
-Courses In Progress:
-Introduction to Computer Networks, 
-Software Engineering I
+Analysis of Algorithms,
+Intro to Databases,
+Operating Systems,
+Parallel Programming,
+Intro to Computer Networks, 
+Software Engineering I & II,
+Cloud Application Development,
+Defense Against the Dark Arts,
+Capstone Project

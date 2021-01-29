@@ -1,10 +1,11 @@
-# Elisabeth Mansfield
-## Student Portfolio
+# Student Portfolio
 
+## Elisabeth Mansfield
 #### Oregon State University
 #### B.S. Computer Science
 #### Graduated December 2019
 
+___
 Courses Completed:
 - Intro to Computer Science I & II
 - Discrete Structures in Computer Science

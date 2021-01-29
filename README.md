@@ -1,5 +1,5 @@
 # Elisabeth Mansfield
-# Student Portfolio
+## Student Portfolio
 
 #### Oregon State University
 #### B.S. Computer Science
